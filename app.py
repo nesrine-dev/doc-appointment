@@ -12,7 +12,7 @@ def get_db_connection():
     if not url:
         raise ValueError("No database URL found in environment variables!")
         
-    conn = psycopg2.connect(url)
+    conn = psycopg2.connect(url, sslmode='require')
     return conn
 
 @app.route('/')
@@ -57,4 +57,5 @@ def register():
     return render_template('register.html')
 
 # Add other routes for doctors and appointments here later!
+
 
