@@ -4,16 +4,13 @@ from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# This connects to the Neon Database using the secret URL Vercel just created
 def get_db_connection():
-    # This checks for both possible names Vercel might use
+    # Checks both possible Vercel names
     url = os.environ.get('DATABASE_URL') or os.environ.get('POSTGRES_URL')
-    
     if not url:
-        raise ValueError("No database URL found in environment variables!")
-        
-    conn = psycopg2.connect(url, sslmode='require')
-    return conn
+        return None
+    # Neon REQUIRES sslmode=require
+    return psycopg2.connect(url, sslmode='require')
 
 @app.route('/')
 def index():
@@ -24,38 +21,37 @@ def register():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
-        phone = request.form.get('phone')
-        dob = request.form.get('dob')
-        gender = request.form.get('gender')
         password = request.form.get('password')
 
         conn = get_db_connection()
-        cur = conn.cursor()
+        if conn is None:
+            return "Database connection failed. Check Environment Variables."
         
-        # Create the table if it's not there yet
+        cur = conn.cursor()
+        # Create table if missing
         cur.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
                 name TEXT,
                 email TEXT UNIQUE,
-                phone TEXT,
-                dob TEXT,
-                gender TEXT,
                 password TEXT
             );
         ''')
         
-        # Insert the data
-        cur.execute('INSERT INTO users (name, email, phone, dob, gender, password) VALUES (%s, %s, %s, %s, %s, %s)',
-                    (name, email, phone, dob, gender, password))
+        cur.execute('INSERT INTO users (name, email, password) VALUES (%s, %s, %s)',
+                    (name, email, password))
         
         conn.commit()
         cur.close()
         conn.close()
-        return f"<h1>Account created for {name}! Your data is now in the database.</h1>"
+        return f"<h1>Success! Welcome {name}.</h1>"
 
     return render_template('register.html')
 
-# Add other routes for doctors and appointments here later!
+@app.route('/doctors')
+def doctors():
+    return render_template('doctors.html')
 
-
+@app.route('/appointment')
+def appointment():
+    return render_template('appointment.html')
