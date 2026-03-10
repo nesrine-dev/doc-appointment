@@ -6,9 +6,12 @@ app = Flask(__name__)
 
 # This connects to the Neon Database using the secret URL Vercel just created
 def get_db_connection():
-    # Vercel/Neon use 'DATABASE_URL' or 'POSTGRES_URL'
-    # We will try DATABASE_URL first as it's the standard for Neon
-    url = os.environ.get('DATABASE_URL')
+    # This checks for both possible names Vercel might use
+    url = os.environ.get('DATABASE_URL') or os.environ.get('POSTGRES_URL')
+    
+    if not url:
+        raise ValueError("No database URL found in environment variables!")
+        
     conn = psycopg2.connect(url)
     return conn
 
@@ -54,3 +57,4 @@ def register():
     return render_template('register.html')
 
 # Add other routes for doctors and appointments here later!
+
