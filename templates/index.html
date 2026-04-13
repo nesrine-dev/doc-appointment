@@ -1,230 +1,197 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocAppointment | Management System</title>
-    
+    <title>DocAppointment | Modern Healthcare Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0b1120; 
-            color: #e2e8f0;
-            margin: 0;
-            min-height: 100vh;
-            position: relative; 
-            overflow-x: hidden;
-        }
-
-        #particles-js {
-            position: fixed;
-            width: 100vw;
-            height: 100vh;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            background-color: #0b1120;
-        }
-
-        .text-gradient {
-            background: linear-gradient(to right, #60a5fa, #2dd4bf);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Upgraded Premium Glass Effect */
-        .glass-panel {
-            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.8) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-top: 1px solid rgba(255, 255, 255, 0.15); /* Simulates top lighting */
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6);
-        }
-
-        /* Custom buttons for better visual hierarchy */
-        .btn-primary {
-            background: linear-gradient(135deg, #2563eb, #0d9488);
-            color: white;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-            border: 1px solid transparent;
-        }
-        .btn-primary:hover {
-            box-shadow: 0 6px 20px rgba(45, 212, 191, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1;
-        }
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        /* Doctor card styling */
-        .doctor-card {
-            background: rgba(15, 23, 42, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .doctor-card:hover {
-            background: rgba(30, 41, 59, 0.8);
-            border-color: rgba(96, 165, 250, 0.3);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
-        }
-    </style>
-</head>
-
-<body class="antialiased">
-
-    <div id="particles-js"></div>
-
-    <div class="max-w-[1200px] mx-auto px-6 py-10 relative z-10">
-        
-        <nav class="flex justify-between items-center mb-12">
-            <div class="text-2xl font-bold tracking-tight text-gradient">DocAppointment</div>
-            <div class="hidden sm:flex space-x-6 text-sm font-medium text-slate-400">
-                <a href="#" class="hover:text-white transition">Features</a>
-                <a href="#" class="hover:text-white transition">About</a>
-                <a href="#" class="hover:text-white transition">Contact</a>
-            </div>
-        </nav>
-
-        <div class="glass-panel rounded-3xl p-8 lg:p-12 flex flex-col lg:flex-row items-center gap-12">
-            
-            <div class="flex-1 w-full lg:w-1/2 space-y-8">
-                <div class="space-y-4">
-                    <h1 class="text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
-                        Smart <span class="text-gradient">Medical</span> <br /> Appointment System
-                    </h1>
-                    <p class="text-slate-400 text-lg leading-relaxed max-w-lg">
-                        A seamless platform allowing patients to book consultations instantly. View real-time doctor availability and skip the waiting room.
-                    </p>
-                </div>
-
-                <div class="flex flex-wrap gap-4 pt-2">
-                    <a href="{{ url_for('appointment') }}" class="btn-primary px-8 py-3.5 rounded-xl font-semibold flex items-center gap-3 transition-all">
-                        <i class="fa-regular fa-calendar-check text-lg"></i> Book Now
-                    </a>
-                    <a href="{{ url_for('register') }}" class="btn-secondary px-6 py-3.5 rounded-xl font-medium flex items-center gap-3 transition-all">
-                        <i class="fa-solid fa-user-plus"></i> Register
-                    </a>
-                    <a href="{{ url_for('doctors') }}" class="btn-secondary px-6 py-3.5 rounded-xl font-medium flex items-center gap-3 transition-all">
-                        <i class="fa-solid fa-stethoscope"></i> Doctors
-                    </a>
-                </div>
-            </div>
-
-            <div class="flex-1 w-full lg:w-1/2 relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-teal-400 rounded-2xl blur-lg opacity-30 group-hover:opacity-60 transition duration-500"></div>
-                
-                <video autoplay loop muted playsinline class="relative w-full rounded-xl shadow-2xl border border-white/10 object-cover aspect-video">
-                    <source src="{{ url_for('static', filename='Doctor_Video_Creation_Request.mp4') }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-
-        </div>
-
-        <div class="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <div class="doctor-card rounded-2xl p-8 flex flex-col items-center">
-                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 p-[2px] mb-4 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                    <div class="w-full h-full bg-[#0f172a] rounded-full flex items-center justify-center text-blue-400 text-2xl">
-                        <i class="fa-solid fa-user-doctor"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-white mb-1">Dr. Sarah Ahmed</h3>
-                <p class="text-sm text-blue-400 font-medium mb-3">Cardiologist</p>
-                <div class="flex gap-1 text-yellow-500 text-xs mb-3">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                </div>
-                <span class="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-xs font-medium flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Available
-                </span>
-            </div>
-
-            <div class="doctor-card rounded-2xl p-8 flex flex-col items-center">
-                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 p-[2px] mb-4 shadow-[0_0_20px_rgba(20,184,166,0.3)]">
-                    <div class="w-full h-full bg-[#0f172a] rounded-full flex items-center justify-center text-teal-400 text-2xl">
-                        <i class="fa-solid fa-user-doctor"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-white mb-1">Dr. Michael Lee</h3>
-                <p class="text-sm text-teal-400 font-medium mb-3">Neurologist</p>
-                <div class="flex gap-1 text-yellow-500 text-xs mb-3">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                </div>
-                <span class="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-xs font-medium flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Available
-                </span>
-            </div>
-
-            <div class="doctor-card rounded-2xl p-8 flex flex-col items-center">
-                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-teal-500 p-[2px] mb-4 shadow-[0_0_20px_rgba(59,130,246,0.3)]">
-                    <div class="w-full h-full bg-[#0f172a] rounded-full flex items-center justify-center text-blue-300 text-2xl">
-                        <i class="fa-solid fa-user-doctor"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-white mb-1">Dr. Emily Smith</h3>
-                <p class="text-sm text-blue-300 font-medium mb-3">Dermatologist</p>
-                <div class="flex gap-1 text-yellow-500 text-xs mb-3">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
-                </div>
-                <span class="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-xs font-medium flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Available
-                </span>
-            </div>
-
-            <div class="doctor-card rounded-2xl p-8 flex flex-col items-center">
-                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 p-[2px] mb-4 shadow-[0_0_20px_rgba(99,102,241,0.3)]">
-                    <div class="w-full h-full bg-[#0f172a] rounded-full flex items-center justify-center text-indigo-400 text-2xl">
-                        <i class="fa-solid fa-user-doctor"></i>
-                    </div>
-                </div>
-                <h3 class="text-lg font-bold text-white mb-1">Dr. David Kim</h3>
-                <p class="text-sm text-indigo-400 font-medium mb-3">Pediatrician</p>
-                <div class="flex gap-1 text-yellow-500 text-xs mb-3">
-                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                </div>
-                <span class="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-xs font-medium flex items-center gap-1.5">
-                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Available
-                </span>
-            </div>
-
-        </div>
-    </div>
-
     <script>
-        particlesJS("particles-js", {
-            "particles": {
-                "number": { "value": 50, "density": { "enable": true, "value_area": 900 } },
-                "color": { "value": ["#3b82f6", "#14b8a6"] },
-                "shape": { "type": "circle" },
-                "opacity": { "value": 0.4, "random": false },
-                "size": { "value": 3, "random": true },
-                "line_linked": { "enable": true, "distance": 150, "color": "#3b82f6", "opacity": 0.15, "width": 1 },
-                "move": { "enable": true, "speed": 1.5, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
-            },
-            "interactivity": {
-                "detect_on": "canvas",
-                "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" }, "resize": true },
-                "modes": { "grab": { "distance": 140, "line_linked": { "opacity": 0.4 } }, "push": { "particles_nb": 3 } }
-            },
-            "retina_detect": true
-        });
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0ea5e9', // Sky blue
+                        secondary: '#10b981', // Emerald green
+                        dark: '#0f172a', // Slate 900
+                    }
+                }
+            }
+        }
     </script>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-primary selection:text-white overflow-x-hidden">
+
+    <nav class="fixed w-full bg-white/80 backdrop-blur-md z-50 border-b border-slate-200 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                    <a href="{{ url_for('index') }}" class="flex-shrink-0 flex items-center gap-2 cursor-pointer transition-transform hover:scale-105">
+                    <i class="fa-solid fa-heart-pulse text-3xl bg-gradient-to-r from-blue-500 to-teal-400 text-transparent bg-clip-text"></i>
+                    <span class="font-bold text-2xl tracking-tight text-slate-900">
+                        Doc<span class="bg-gradient-to-r from-blue-500 to-teal-400 text-transparent bg-clip-text">Appointment</span>
+                    </span>
+                </a>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-slate-600 hover:text-primary font-medium transition-colors">Features</a>
+                    <a href="#roles" class="text-slate-600 hover:text-primary font-medium transition-colors">Who It's For</a>
+                    <div class="h-6 w-px bg-slate-300"></div>
+                    <a href="{{ url_for('register') }}" class="text-slate-600 hover:text-primary font-medium transition-colors">Log In</a>
+                    <a href="{{ url_for('appointment') }}" class="bg-dark hover:bg-slate-800 text-white px-6 py-2.5 rounded-full font-medium transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        Book Appointment
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-full blur-3xl -z-10 opacity-50"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="text-center max-w-3xl mx-auto">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-primary font-semibold text-sm mb-6">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                    </span>
+                    Centralized Database System
+                </div>
+                <h1 class="text-5xl md:text-6xl font-extrabold text-dark tracking-tight mb-8 leading-tight">
+                    The end of paper schedules. <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">The future of clinical care.</span>
+                </h1>
+                <p class="text-sm text-slate-500 mt-4 tracking-wide">
+                Trusted by 10,000+ patients • 50+ certified doctors • 24/7 service
+                </p>
+                    A modern, centralized web application designed to eliminate double-booking, streamline medical records, and let patients book appointments 24/7 from the comfort of their homes.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="{{ url_for('appointment') }}" class="bg-primary hover:bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg transition-all shadow-lg shadow-primary/30 transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                        <i class="fa-regular fa-calendar-check"></i> Patient Booking
+                    </a>
+                    <a href="{{ url_for('register') }}" class="bg-white hover:bg-slate-50 text-dark border border-slate-200 px-8 py-4 rounded-full font-bold text-lg transition-all shadow-sm transform hover:-translate-y-1 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-network-wired"></i> Clinic Staff Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="py-20 bg-white border-y border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <h2 class="text-3xl font-bold text-dark mb-4">Why move to a Centralized System?</h2>
+                <p class="text-slate-600">Old-fashioned manual methods lead to time wasted and critical errors. DocAppointment brings your entire clinic into a single, real-time environment.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl transition-shadow duration-300 group">
+                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-folder-open text-2xl text-slate-400 group-hover:text-primary transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">No More Scattered Files</h3>
+                    <p class="text-slate-600 leading-relaxed">Stop relying on paper schedules and physical drawers. Access a patient's medical history and contact information instantly via a secure database query.</p>
+                </div>
+
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl transition-shadow duration-300 group">
+                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-clock-rotate-left text-2xl text-slate-400 group-hover:text-primary transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">Eliminate Overbooking</h3>
+                    <p class="text-slate-600 leading-relaxed">With real-time database updates, everyone sees the "big picture." Double-booking and scheduling conflicts become a thing of the past.</p>
+                </div>
+
+                <div class="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:shadow-xl transition-shadow duration-300 group">
+                    <div class="w-14 h-14 bg-white rounded-2xl shadow-sm border border-slate-200 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-file-invoice-dollar text-2xl text-slate-400 group-hover:text-primary transition-colors"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-dark mb-3">Automated Invoicing</h3>
+                    <p class="text-slate-600 leading-relaxed">Generate detailed invoices automatically after appointments, reducing mathematical mistakes and financial inconsistencies.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="roles" class="py-24 bg-dark text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-16 md:flex md:justify-between md:items-end">
+                <div class="max-w-2xl">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">A powerful workspace for every role.</h2>
+                    <p class="text-slate-400 text-lg">The system workload is distributed perfectly across three dedicated portals, ensuring secure access and focused tools for everyone involved.</p>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6">
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700 p-8 rounded-3xl hover:bg-slate-800 transition-colors">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold">Patients</h3>
+                    </div>
+                    <ul class="space-y-4 text-slate-300">
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Register and manage personal accounts</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Search for doctors by specialty</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>View available times and book 24/7</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Cancel or reschedule without calling</span></li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700 p-8 rounded-3xl hover:bg-slate-800 transition-colors relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-bl-full -z-10"></div>
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-xl">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold">Doctors</h3>
+                    </div>
+                    <ul class="space-y-4 text-slate-300">
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>View daily and weekly schedules securely</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Check patient medical information instantly</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Manage available time slots and capacity</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Update appointment and treatment status</span></li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-800/50 backdrop-blur border border-slate-700 p-8 rounded-3xl hover:bg-slate-800 transition-colors">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-xl">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold">Administrators</h3>
+                    </div>
+                    <ul class="space-y-4 text-slate-300">
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Add or update clinic doctor information</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Manage and secure overarching patient records</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Monitor all clinic appointment schedules</span></li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-check text-secondary mt-1"></i> <span>Maintain backend database integrity (CRUD)</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-white pt-20 pb-10 border-t border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold text-dark mb-6">Ready to modernize your clinic?</h2>
+            <p class="text-slate-600 mb-10 text-lg">Join the platform that saves medical staff time and provides customers with a highly enjoyable, modern experience.</p>
+            <a href="{{ url_for('appointment') }}" class="inline-block bg-dark hover:bg-slate-800 text-white px-10 py-4 rounded-full font-bold text-lg transition-all shadow-lg transform hover:-translate-y-1">
+                Access Database System
+            </a>
+            
+            <div class="mt-20 pt-8 border-t border-slate-200 text-slate-500 text-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2 font-bold text-dark text-lg">
+                    <i class="fa-solid fa-heart-pulse text-primary"></i> DocAppointment
+                </div>
+                <p>&copy; DocAppointment © 2026 | Medical Booking Platform.</p>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>
