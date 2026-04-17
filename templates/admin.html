@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel | DocAppointment</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body { margin:0; font-family:system-ui,-apple-system,sans-serif; background:#020617; color:white; min-height:100vh; }
+body::before { content:""; position:fixed; inset:0; background:radial-gradient(circle at 10% 20%,rgba(139,92,246,0.12),transparent 40%),radial-gradient(circle at 80% 70%,rgba(37,99,235,0.10),transparent 40%); z-index:-1; }
+.glass { background:rgba(255,255,255,0.04); backdrop-filter:blur(20px); border-radius:16px; border:1px solid rgba(255,255,255,0.08); }
+.tab-btn { padding:8px 20px; border-radius:10px; font-size:13px; cursor:pointer; transition:0.2s; border:none; background:transparent; color:#9ca3af; }
+.tab-btn.active { background:rgba(6,182,212,0.2); color:#22d3ee; font-weight:500; }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+.badge { font-size:11px; padding:2px 8px; border-radius:20px; font-weight:500; }
+.badge-pending   { background:rgba(245,158,11,0.2);  color:#fcd34d; }
+.badge-confirmed { background:rgba(59,130,246,0.2);  color:#93c5fd; }
+.badge-completed { background:rgba(16,185,129,0.2);  color:#6ee7b7; }
+.badge-cancelled { background:rgba(239,68,68,0.2);   color:#fca5a5; }
+.badge-patient { background:rgba(99,102,241,0.2); color:#a5b4fc; }
+.badge-doctor  { background:rgba(16,185,129,0.2); color:#6ee7b7; }
+.badge-admin   { background:rgba(239,68,68,0.2);  color:#fca5a5; }
+.alert { padding:12px 16px; border-radius:10px; margin-bottom:16px; font-size:14px; }
+.alert-success { background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.4); color:#6ee7b7; }
+.alert-info    { background:rgba(59,130,246,0.2);  border:1px solid rgba(59,130,246,0.4);  color:#93c5fd; }
+.alert-danger  { background:rgba(239,68,68,0.2);  border:1px solid rgba(239,68,68,0.4);  color:#fca5a5; }
+input, select, textarea {
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+  color:white; border-radius:8px; padding:8px 12px; font-size:13px; width:100%; box-sizing:border-box;
+}
+input::placeholder, textarea::placeholder { color:#6b7280; }
+select option { background:#0f172a; }
+</style>
+</head>
+<body>
+<nav class="px-8 py-4 flex justify-between items-center bg-white/5 backdrop-blur border-b border-white/10">
+    <a href="{{ url_for('index') }}" class="flex items-center gap-2 text-xl font-bold">
+        <i class="fa-solid fa-heart-pulse text-purple-400"></i>
+        Doc<span class="text-purple-400">Appointment</span> <span class="text-gray-400 text-sm font-normal ml-2">Admin</span>
+    </a>
+    <a href="{{ url_for('logout') }}" class="text-red-400 hover:text-red-300 text-sm">Logout</a>
+</nav>
+
+<main class="max-w-7xl mx-auto px-6 py-10">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <h1 class="text-3xl font-bold mb-2">Admin Panel</h1>
+    <p class="text-gray-400 mb-8">Full system overview and management</p>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="glass p-5 text-center"><div class="text-3xl font-bold text-purple-400">{{ users|length }}</div><div class="text-gray-400 text-sm mt-1">Total Users</div></div>
+        <div class="glass p-5 text-center"><div class="text-3xl font-bold text-cyan-400">{{ doctors|length }}</div><div class="text-gray-400 text-sm mt-1">Doctors</div></div>
+        <div class="glass p-5 text-center"><div class="text-3xl font-bold text-blue-400">{{ appointments|length }}</div><div class="text-gray-400 text-sm mt-1">Appointments</div></div>
+        <div class="glass p-5 text-center"><div class="text-3xl font-bold text-green-400">{{ invoices|length }}</div><div class="text-gray-400 text-sm mt-1">Invoices</div></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-2 mb-6">
+        <button class="tab-btn active" onclick="switchTab('users',this)">Users</button>
+        <button class="tab-btn"        onclick="switchTab('appointments',this)">Appointments</button>
+        <button class="tab-btn"        onclick="switchTab('invoices',this)">Invoices</button>
+        <button class="tab-btn"        onclick="switchTab('add-doctor',this)">Add Doctor</button>
+    </div>
+
+    <!-- USERS -->
+    <div id="tab-users" class="tab-panel active">
+        <div class="glass overflow-hidden">
+            <div class="px-6 py-4 border-b border-white/10"><h2 class="font-semibold">All Users</h2></div>
+            <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead><tr class="text-gray-400 border-b border-white/10 text-left">
+                    <th class="px-6 py-3">Name</th><th class="px-6 py-3">Email</th>
+                    <th class="px-6 py-3">Phone</th><th class="px-6 py-3">Role</th>
+                    <th class="px-6 py-3">Joined</th><th class="px-6 py-3">Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for u in users %}
+                <tr class="border-b border-white/5 hover:bg-white/5 transition">
+                    <td class="px-6 py-3 font-medium">{{ u.name }}</td>
+                    <td class="px-6 py-3 text-gray-400">{{ u.email }}</td>
+                    <td class="px-6 py-3 text-gray-400">{{ u.phone or '—' }}</td>
+                    <td class="px-6 py-3"><span class="badge badge-{{ u.role }}">{{ u.role|capitalize }}</span></td>
+                    <td class="px-6 py-3 text-gray-400">{{ u.created_at.strftime('%d %b %Y') }}</td>
+                    <td class="px-6 py-3">
+                        <form method="POST" action="{{ url_for('admin_delete_user', user_id=u.id) }}"
+                              onsubmit="return confirm('Delete {{ u.name }}?')">
+                            <button class="text-red-400 hover:text-red-300 text-xs">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPOINTMENTS -->
+    <div id="tab-appointments" class="tab-panel">
+        <div class="glass overflow-hidden">
+            <div class="px-6 py-4 border-b border-white/10"><h2 class="font-semibold">All Appointments</h2></div>
+            <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead><tr class="text-gray-400 border-b border-white/10 text-left">
+                    <th class="px-6 py-3">Patient</th><th class="px-6 py-3">Doctor</th>
+                    <th class="px-6 py-3">Date</th><th class="px-6 py-3">Time</th>
+                    <th class="px-6 py-3">Status</th><th class="px-6 py-3">Actions</th>
+                </tr></thead>
+                <tbody>
+                {% for appt in appointments %}
+                <tr class="border-b border-white/5 hover:bg-white/5 transition">
+                    <td class="px-6 py-3 font-medium">{{ appt.patient.name }}</td>
+                    <td class="px-6 py-3 text-gray-400">Dr. {{ appt.doctor.user.name }}</td>
+                    <td class="px-6 py-3">{{ appt.appt_date }}</td>
+                    <td class="px-6 py-3">{{ appt.appt_time }}</td>
+                    <td class="px-6 py-3"><span class="badge badge-{{ appt.status }}">{{ appt.status|capitalize }}</span></td>
+                    <td class="px-6 py-3 flex gap-3">
+                        {% if appt.invoice %}
+                        <a href="{{ url_for('invoice', appt_id=appt.id) }}" class="text-cyan-400 hover:underline text-xs">Invoice</a>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('admin_delete_appointment', appt_id=appt.id) }}"
+                              onsubmit="return confirm('Delete this appointment?')">
+                            <button class="text-red-400 hover:text-red-300 text-xs">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- INVOICES -->
+    <div id="tab-invoices" class="tab-panel">
+        <div class="glass overflow-hidden">
+            <div class="px-6 py-4 border-b border-white/10"><h2 class="font-semibold">All Invoices</h2></div>
+            <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead><tr class="text-gray-400 border-b border-white/10 text-left">
+                    <th class="px-6 py-3">#</th><th class="px-6 py-3">Patient</th>
+                    <th class="px-6 py-3">Treatment</th><th class="px-6 py-3">Medicines</th>
+                    <th class="px-6 py-3">Total</th><th class="px-6 py-3">Date</th><th class="px-6 py-3">View</th>
+                </tr></thead>
+                <tbody>
+                {% for inv in invoices %}
+                <tr class="border-b border-white/5 hover:bg-white/5 transition">
+                    <td class="px-6 py-3 text-gray-400">#{{ '%04d'|format(inv.id) }}</td>
+                    <td class="px-6 py-3 font-medium">{{ inv.appointment.patient.name }}</td>
+                    <td class="px-6 py-3 text-gray-400">{{ inv.treatment }}</td>
+                    <td class="px-6 py-3 text-gray-400">{{ inv.medicines or '—' }}</td>
+                    <td class="px-6 py-3 font-bold text-green-400">₺{{ "%.2f"|format(inv.total_cost) }}</td>
+                    <td class="px-6 py-3 text-gray-400">{{ inv.created_at.strftime('%d %b %Y') }}</td>
+                    <td class="px-6 py-3">
+                        <a href="{{ url_for('invoice', appt_id=inv.appointment_id) }}" class="text-cyan-400 hover:underline text-xs">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD DOCTOR -->
+    <div id="tab-add-doctor" class="tab-panel">
+        <div class="glass p-8 max-w-lg">
+            <h2 class="text-xl font-semibold mb-6">Add New Doctor</h2>
+            <form method="POST" action="{{ url_for('admin_add_doctor') }}" class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">Full Name</label>
+                    <input type="text" name="name" placeholder="Dr. Full Name" required>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">Email</label>
+                    <input type="email" name="email" placeholder="doctor@clinic.com" required>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">Specialty</label>
+                    <select name="specialty" required>
+                        <option value="">Select specialty</option>
+                        <option>General Practice</option>
+                        <option>Cardiology</option>
+                        <option>Dermatology</option>
+                        <option>Neurology</option>
+                        <option>Pediatrics</option>
+                        <option>Orthopedics</option>
+                        <option>Ophthalmology</option>
+                        <option>Psychiatry</option>
+                        <option>Oncology</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">Bio</label>
+                    <textarea name="bio" rows="3" placeholder="Short biography..."></textarea>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">Temporary Password</label>
+                    <input type="text" name="password" value="DocPass2026!" required>
+                </div>
+                <button type="submit"
+                        class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 font-semibold hover:opacity-90 transition">
+                    Add Doctor
+                </button>
+            </form>
+        </div>
+    </div>
+
+</main>
+<script>
+function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+}
+</script>
+</body>
+</html>

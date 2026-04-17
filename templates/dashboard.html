@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Dashboard | DocAppointment</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body { margin:0; font-family:system-ui,-apple-system,sans-serif; background:#020617; color:white; min-height:100vh; }
+body::before { content:""; position:fixed; inset:0; background:radial-gradient(circle at 20% 30%,rgba(6,182,212,0.12),transparent 40%),radial-gradient(circle at 80% 70%,rgba(37,99,235,0.12),transparent 40%); z-index:-1; }
+.glass { background:rgba(255,255,255,0.04); backdrop-filter:blur(20px); border-radius:16px; border:1px solid rgba(255,255,255,0.08); }
+.badge { font-size:12px; padding:3px 10px; border-radius:20px; font-weight:500; }
+.badge-pending   { background:rgba(245,158,11,0.2);  color:#fcd34d; }
+.badge-confirmed { background:rgba(59,130,246,0.2);  color:#93c5fd; }
+.badge-completed { background:rgba(16,185,129,0.2);  color:#6ee7b7; }
+.badge-cancelled { background:rgba(239,68,68,0.2);   color:#fca5a5; }
+.alert { padding:12px 16px; border-radius:10px; margin-bottom:16px; font-size:14px; }
+.alert-danger  { background:rgba(239,68,68,0.2);  border:1px solid rgba(239,68,68,0.4);  color:#fca5a5; }
+.alert-success { background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.4); color:#6ee7b7; }
+.alert-warning { background:rgba(245,158,11,0.2); border:1px solid rgba(245,158,11,0.4); color:#fcd34d; }
+.alert-info    { background:rgba(59,130,246,0.2);  border:1px solid rgba(59,130,246,0.4);  color:#93c5fd; }
+</style>
+</head>
+<body>
+<nav class="px-8 py-4 flex justify-between items-center bg-white/5 backdrop-blur border-b border-white/10">
+    <a href="{{ url_for('index') }}" class="flex items-center gap-2 text-xl font-bold">
+        <i class="fa-solid fa-heart-pulse text-cyan-400"></i>
+        Doc<span class="text-cyan-400">Appointment</span>
+    </a>
+    <div class="flex items-center gap-6 text-sm">
+        <a href="{{ url_for('appointment') }}" class="hover:text-cyan-400">Book Appointment</a>
+        <a href="{{ url_for('doctors') }}"     class="hover:text-cyan-400">Doctors</a>
+        <a href="{{ url_for('logout') }}"      class="text-red-400 hover:text-red-300">Logout</a>
+    </div>
+</nav>
+
+<main class="max-w-5xl mx-auto px-6 py-10">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold">Hello, {{ user.name }} 👋</h1>
+        <p class="text-gray-400 mt-1">Manage your appointments below.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {% set total     = appointments|length %}
+        {% set pending   = appointments|selectattr('status','equalto','pending')|list|length %}
+        {% set confirmed = appointments|selectattr('status','equalto','confirmed')|list|length %}
+        {% set completed = appointments|selectattr('status','equalto','completed')|list|length %}
+        <div class="glass p-5 text-center">
+            <div class="text-3xl font-bold text-cyan-400">{{ total }}</div>
+            <div class="text-gray-400 text-sm mt-1">Total</div>
+        </div>
+        <div class="glass p-5 text-center">
+            <div class="text-3xl font-bold text-yellow-400">{{ pending }}</div>
+            <div class="text-gray-400 text-sm mt-1">Pending</div>
+        </div>
+        <div class="glass p-5 text-center">
+            <div class="text-3xl font-bold text-blue-400">{{ confirmed }}</div>
+            <div class="text-gray-400 text-sm mt-1">Confirmed</div>
+        </div>
+        <div class="glass p-5 text-center">
+            <div class="text-3xl font-bold text-green-400">{{ completed }}</div>
+            <div class="text-gray-400 text-sm mt-1">Completed</div>
+        </div>
+    </div>
+
+    <!-- Book button -->
+    <div class="mb-6">
+        <a href="{{ url_for('appointment') }}"
+           class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 font-semibold hover:opacity-90 transition inline-flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Book New Appointment
+        </a>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="glass overflow-hidden">
+        <div class="px-6 py-4 border-b border-white/10">
+            <h2 class="text-lg font-semibold">My Appointments</h2>
+        </div>
+        {% if appointments %}
+        <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="text-gray-400 border-b border-white/10 text-left">
+                    <th class="px-6 py-3">Doctor</th>
+                    <th class="px-6 py-3">Specialty</th>
+                    <th class="px-6 py-3">Date</th>
+                    <th class="px-6 py-3">Time</th>
+                    <th class="px-6 py-3">Status</th>
+                    <th class="px-6 py-3">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr class="border-b border-white/5 hover:bg-white/5 transition">
+                    <td class="px-6 py-4 font-medium">Dr. {{ appt.doctor.user.name }}</td>
+                    <td class="px-6 py-4 text-gray-400">{{ appt.doctor.specialty }}</td>
+                    <td class="px-6 py-4">{{ appt.appt_date }}</td>
+                    <td class="px-6 py-4">{{ appt.appt_time }}</td>
+                    <td class="px-6 py-4">
+                        <span class="badge badge-{{ appt.status }}">{{ appt.status|capitalize }}</span>
+                    </td>
+                    <td class="px-6 py-4 flex gap-3">
+                        {% if appt.invoice %}
+                        <a href="{{ url_for('invoice', appt_id=appt.id) }}"
+                           class="text-cyan-400 hover:underline text-xs flex items-center gap-1">
+                           <i class="fa-solid fa-file-invoice"></i> Invoice
+                        </a>
+                        {% endif %}
+                        {% if appt.status not in ('cancelled','completed') %}
+                        <form method="POST" action="{{ url_for('cancel_appointment', appt_id=appt.id) }}"
+                              onsubmit="return confirm('Cancel this appointment?')">
+                            <button class="text-red-400 hover:text-red-300 text-xs flex items-center gap-1">
+                                <i class="fa-solid fa-xmark"></i> Cancel
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        {% else %}
+        <div class="py-16 text-center text-gray-500">
+            <i class="fa-solid fa-calendar-xmark text-4xl mb-4"></i>
+            <p>No appointments yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</main>
+</body>
+</html>
