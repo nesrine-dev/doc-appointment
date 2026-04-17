@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login | DocAppointment</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body { margin:0; font-family:system-ui,-apple-system,sans-serif; color:white; min-height:100vh; }
+.video-bg { position:fixed; width:100%; height:100%; object-fit:cover; z-index:-2; }
+.overlay  { position:fixed; width:100%; height:100%; background:rgba(5,10,20,0.78); z-index:-1; }
+.header-bg { background:rgba(15,23,42,0.7); backdrop-filter:blur(10px); }
+.glass-card { background:rgba(15,23,42,0.6); backdrop-filter:blur(25px); border-radius:20px; padding:40px; border:1px solid rgba(255,255,255,0.08); box-shadow:0 20px 50px rgba(0,0,0,0.6); }
+.form-input { width:100%; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.05); color:white; margin-bottom:15px; transition:0.3s; box-sizing:border-box; }
+.form-input::placeholder { color:#9ca3af; }
+.form-input:focus { outline:none; border-color:#06b6d4; box-shadow:0 0 0 2px rgba(6,182,212,0.3); }
+.text-gradient { background:linear-gradient(to right,#3b82f6,#14b8a6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.btn-modern { width:100%; padding:12px; background:linear-gradient(to right,#06b6d4,#2563eb); border:none; border-radius:10px; color:white; font-weight:600; cursor:pointer; transition:0.3s; }
+.btn-modern:hover { transform:translateY(-2px); box-shadow:0 10px 25px rgba(37,99,235,0.4); }
+.alert { padding:12px 16px; border-radius:10px; margin-bottom:16px; font-size:14px; }
+.alert-danger  { background:rgba(239,68,68,0.2);  border:1px solid rgba(239,68,68,0.4);  color:#fca5a5; }
+.alert-success { background:rgba(16,185,129,0.2); border:1px solid rgba(16,185,129,0.4); color:#6ee7b7; }
+.alert-warning { background:rgba(245,158,11,0.2); border:1px solid rgba(245,158,11,0.4); color:#fcd34d; }
+.alert-info    { background:rgba(59,130,246,0.2);  border:1px solid rgba(59,130,246,0.4);  color:#93c5fd; }
+</style>
+</head>
+<body>
+<video autoplay loop muted playsinline class="video-bg">
+    <source src="{{ url_for('static', filename='Doctor_Video_Creation_Request.mp4') }}" type="video/mp4">
+</video>
+<div class="overlay"></div>
+
+<nav class="header-bg px-6 py-4 flex justify-between items-center">
+    <a href="{{ url_for('index') }}" class="flex items-center gap-2 text-2xl font-bold">
+        <i class="fa-solid fa-heart-pulse bg-gradient-to-r from-blue-400 to-teal-400 text-transparent bg-clip-text"></i>
+        <span>Doc<span class="text-gradient">Appointment</span></span>
+    </a>
+    <div class="space-x-4 text-sm font-medium">
+        <a href="{{ url_for('index') }}"    class="hover:text-cyan-400">Home</a>
+        <a href="{{ url_for('doctors') }}"  class="hover:text-cyan-400">Doctors</a>
+        <a href="{{ url_for('register') }}" class="hover:text-cyan-400">Register</a>
+    </div>
+</nav>
+
+<main class="flex justify-center items-center min-h-[85vh] px-4">
+    <div class="w-full max-w-md glass-card">
+        <h2 class="text-center text-3xl font-bold mb-2">Welcome Back</h2>
+        <p class="text-center text-gray-400 mb-6">Sign in to your account</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="email"    name="email"    class="form-input" placeholder="Email Address" required>
+            <input type="password" name="password" class="form-input" placeholder="Password" required>
+            <button type="submit" class="btn-modern mt-2">Sign In</button>
+        </form>
+
+        <p class="text-center text-gray-400 text-sm mt-6">
+            Don't have an account?
+            <a href="{{ url_for('register') }}" class="text-cyan-400 hover:underline">Register here</a>
+        </p>
+    </div>
+</main>
+
+<footer class="header-bg py-6 text-center text-sm text-gray-400">
+    DocAppointment &copy; 2026 | Medical Booking Platform
+</footer>
+</body>
+</html>
