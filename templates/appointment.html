@@ -161,18 +161,11 @@
         <form action="{{ url_for('appointment') }}" method="POST">
 
             <div class="form-group">
-                <input type="text" name="patient_id" class="form-control" placeholder="Patient ID" required>
-            </div>
-
-            <div class="form-group">
                 <select name="doctor" class="form-control" required>
                     <option value="" disabled selected>Select a Doctor</option>
-                    <option value="Dr. Sarah Ahmed">Dr. Sarah Ahmed</option>
-                    <option value="Dr. Michael Lee">Dr. Michael Lee</option>
-                    <option value="Dr. Emily Smith">Dr. Emily Smith</option>
-                    <option value="Dr. David Kim">Dr. David Kim</option>
-                    <option value="Dr. Ahmet Yılmaz">Dr. Ahmet Yılmaz</option>
-                    <option value="Dr. Elif Kaya">Dr. Elif Kaya</option>
+                    {% for doc in doctors %}
+                    <option value="{{ doc.id }}">Dr. {{ doc.user.name }} — {{ doc.specialty }}</option>
+                    {% endfor %}
                 </select>
             </div>
 
