@@ -12,9 +12,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-# ─────────────────────────────────────────────
+
 #  MODELS
-# ─────────────────────────────────────────────
 
 class User(db.Model):
     __tablename__ = "users"
@@ -76,9 +75,8 @@ class Invoice(db.Model):
     created_at     = db.Column(db.DateTime, default=datetime.utcnow)
 
 
-# ─────────────────────────────────────────────
 #  AUTH DECORATORS
-# ─────────────────────────────────────────────
+
 
 def login_required(f):
     @wraps(f)
@@ -107,9 +105,7 @@ def doctor_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# ─────────────────────────────────────────────
 #  PUBLIC ROUTES
-# ─────────────────────────────────────────────
 
 @app.route("/")
 def index():
@@ -132,9 +128,7 @@ def contact():
         return redirect(url_for("contact"))
     return render_template("contact.html")
 
-# ─────────────────────────────────────────────
 #  AUTH ROUTES
-# ─────────────────────────────────────────────
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -194,9 +188,7 @@ def logout():
     flash("You have been logged out.", "info")
     return redirect(url_for("index"))
 
-# ─────────────────────────────────────────────
 #  PATIENT ROUTES
-# ─────────────────────────────────────────────
 
 @app.route("/dashboard")
 @login_required
@@ -259,9 +251,7 @@ def cancel_appointment(appt_id):
     flash("Appointment cancelled.", "info")
     return redirect(url_for("dashboard"))
 
-# ─────────────────────────────────────────────
 #  INVOICE
-# ─────────────────────────────────────────────
 
 @app.route("/invoice/<int:appt_id>")
 @login_required
@@ -273,9 +263,7 @@ def invoice(appt_id):
     inv = appt.invoice
     return render_template("invoice.html", appointment=appt, invoice=inv)
 
-# ─────────────────────────────────────────────
 #  DOCTOR ROUTES
-# ─────────────────────────────────────────────
 
 @app.route("/doctor/dashboard")
 @login_required
@@ -319,9 +307,7 @@ def update_appointment_status(appt_id):
         flash(f"Status updated to '{new_status}'.", "success")
     return redirect(url_for("doctor_dashboard"))
 
-# ─────────────────────────────────────────────
 #  ADMIN ROUTES
-# ─────────────────────────────────────────────
 
 @app.route("/admin")
 @login_required
@@ -385,9 +371,7 @@ def admin_add_doctor():
     flash(f"Dr. {name} added successfully.", "success")
     return redirect(url_for("admin"))
 
-# ─────────────────────────────────────────────
 #  INIT DB
-# ─────────────────────────────────────────────
 
 with app.app_context():
     db.create_all()
